@@ -1,0 +1,42 @@
+.card-comic-container {
+    background-color: #001529;
+    width: 90%;
+    min-height: 200px;
+    border-radius: 10px;
+    color: #fff;
+    margin: 10px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    display: block;
+    box-shadow: 1px 10px 15px rgb(143, 143, 143);
+    cursor: pointer;
+}
+
+.card-comic-container:hover{
+    /*transform: translateY(-10px)*/
+    transform: scale(1.01);
+}
+
+.card-comic-container>* {
+    display: inline-block;
+}
+
+.img-card {
+    width: 100px;
+    min-width: 100px;
+    margin: 1rem;
+}
+
+.img-card img {
+    width: 100%;
+}
+
+.right-content-card {
+    text-align: left;
+    margin: 1rem;
+}
+
+
+
+

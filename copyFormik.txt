@@ -1,0 +1,98 @@
+import React, {useEffect, useState} from 'react';
+import './PanelComics.css';
+import {ComicCard} from '../../components';
+import {Api} from '../../common/api';
+import {Formik} from 'formik';
+import * as Yup from 'yup';
+import {ValidationSchema} from './validations'
+
+const PanelComics = () => {
+
+    const [comics, setComics] = useState([]);
+    const [selected, setSelected] = useState({});
+    const [inputs, setInputs] = useState({
+        id          : '',
+        title       : '',
+        description : '',
+        image       : ''
+    });
+
+    const text = "Heavy-hitting heroes unite! This Official Handbook contains in-depth bios on more than 30 of the Marvel Universe's most awesome assemblages - including the Defenders, Power Pack and the New Thunderbolts! Plus: An all-new cover by superstar artist Tom Grummett, digitally painted by Morry Hollowell. <br>48 PGS./All Ages ...$3.99 <br>";
+    
+    const handleComicSelected = (comic) => {
+        setSelected(comic);
+    };
+
+
+    useEffect(() => {
+        Api().then(res => setComics(res.data.results));
+    }, []);
+
+
+
+    return (
+        <div className="container-panel">
+            <div className="left-panel">
+                <h3 className="title">Comics</h3>
+            {
+                comics.map(comic => {
+                    //const img = `${element.thumbnail.path}.${element.thumbnail.extension}`;
+                    const {
+                        id,
+                        title,
+                        description,
+                        thumbnail
+                    } = comic;
+
+                    return (
+                        <ComicCard 
+                            key={id} 
+                            id={id}
+                            title={title} 
+                            description={description ? description : text} 
+                            thumbnail={thumbnail ? `${thumbnail.path}.${thumbnail.extension}` : null}
+                            onSelect={handleComicSelected}
+                        />
+                    )
+                })
+            }
+            </div>
+            <div className="right-panel">
+                <h3 className="title title--right">Comic seleccionado</h3>
+                <img src={selected.thumbnail || "https://cdn.domestika.org/c_limit,dpr_auto,f_auto,q_auto,w_820/v1471610692/content-items/001/689/946/potada_comic-original.jpg?1471610692"} height="150px"></img>
+                <Formik 
+                    initialValues={{
+                        id          : '',
+                        title       : '',
+                        description : '',
+                        image       : ''
+                    }}
+                    validationSchema={ValidationSchema}
+                    onSubmit={values => {
+                        //Valores de los inputs se reciben en values
+                        console.log(values)
+                    }}
+                >
+                    {
+                        ({values, errors, touched, handleSubmit, handleChange, isSubmitting}) => (
+                            <form className="form-panel" onSubmit={handleSubmit}>
+                                <input className="input-form" type="text" onChange={handleChange} value={values.title} placeholder="Digita el titulo" value={selected.title}></input>
+                                {errors.title && touched.title ? <code>{errors}</code> : null}
+                                <input className="input-form" type="text" onChange={handleChange} value={values.id} placeholder="Digita el id" value={selected.id}></input>
+                                {errors.id && touched.id ? <code>{errors}</code> : null}
+                                <input className="input-form" type="text" onChange={handleChange} value={values.description} placeholder="Digita la descripción" value={selected.description}></input>
+                                {errors.description && touched.description ? <code>{errors}</code> : null}
+                                <input className="input-form" type="text" onChange={handleChange} value={values.image} placeholder="Digita la url de la imagen" value={selected.thumbnail}></input>
+                                {errors.image && touched.image ? <code>{errors}</code> : null}
+                                <button className="btn-form" type="submit" disabled={isSubmitting}>Guardar</button>
+                                <button className="btn-form">Limpiar</button>
+                            </form>
+                        )
+                    }
+                </Formik>
+            </div>
+        </div>
+    );
+}
+
+export default PanelComics;
