@@ -1,4 +1,9 @@
 .column{
   background:  #e6f7ff;
   height: 100vh;
+  width: auto;
+}
+
+.manage-container {
+  display: flex;
 }

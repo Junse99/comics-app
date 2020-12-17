@@ -2,38 +2,10 @@ import React, {useEffect, useState} from 'react';
 import {ComicCard} from '../../components';
 import {Modal, Spin} from 'antd';
 import {Api} from '../../common/api';
+import { useSelector, useDispatch, shallowEqual } from "react-redux";
+import * as ComicsTypes from "../../redux/services/comics/comicTypes";
+import { getComics } from "../../redux/services/comics/comicsActions";
 
-const MyModal = ({comic, visible, handleOK, handleCancel}) => {
-
-    const {
-        title,
-        description,
-        id, 
-        thumbnail
-    } = comic;
-
-    return (
-            <Modal
-                title={title}
-                visible={visible}
-                onOk={handleOK}
-                onCancel={handleCancel}
-            >
-{/*                 <img src={thumbnail} height="200px"></img>
-                <p><b>Titulo:</b> {title}</p>
-                <p>{description}</p> */}
-
-                <ComicCard 
-                    key={id} 
-                    id={id}
-                    title={title} 
-                    description={description} 
-                    thumbnail={thumbnail}
-                />
-                
-            </Modal>
-    );
-}
 
 const Comics = () => {
 
@@ -42,6 +14,8 @@ const Comics = () => {
     const [comics, setComics] = useState([]);
     const [selected, setSelected] = useState({});
     const [visible, setVisible] = useState(false);
+
+    const dispatch = useDispatch();
     
     useEffect(() => {
         Api().then(res => setComics(res.data.results));
@@ -55,10 +29,22 @@ const Comics = () => {
         setVisible(false);
     }
 
+    const { loading, comicSelected } = useSelector(
+        (state) => state.comics,
+        shallowEqual
+      );
+
+    console.log('Comiccccsssssss Selected', comicSelected);
+
     //Se ejecuta al presionar una card
     const handleComicSelected = (comic) => {
         setSelected(comic);
         setVisible(true);
+            dispatch({
+              type: ComicsTypes.SELECT_COMIC,
+              payload: {comic}
+            })
+
     };
     console.log(selected);
 //    console.log(comics);
@@ -70,32 +56,16 @@ const Comics = () => {
             <div>
             {
                 comics?.map(comic => {
-                    //const img = `${element.thumbnail.path}.${element.thumbnail.extension}`;
-                    const {
-                        id,
-                        title,
-                        description,
-                        thumbnail
-                    } = comic;
 
                     return (
                         <ComicCard 
-                            key={id} 
-                            id={id}
-                            title={title} 
-                            description={description ? description : text} 
-                            thumbnail={thumbnail ? `${thumbnail.path}.${thumbnail.extension}` : null}
+                            key={comic.id} 
+                            comic={comic}
                             onSelect={handleComicSelected}
                         />
                     )
                 })
             }
-            <MyModal 
-                comic = {selected}
-                visible = {visible}
-                handleOK = {handleOK}
-                handleCancel = {handleCancel}
-            />
             </div>
 
         );
