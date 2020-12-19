@@ -11,7 +11,12 @@ function* getComics(action) {
     const response = yield fetchComics();
     console.log('Resultados',response)
     if ( response ) {
-        yield put(comicActions.getComicsSuccess(response.data.results))
+        const data = {
+            newComics: response.data.results,
+            reviewComics: [],
+            aprovedComics: []
+        }
+        yield put(comicActions.setComics(data))
     }else{
         yield put(comicActions.getComicsFail({
             codigo: '',

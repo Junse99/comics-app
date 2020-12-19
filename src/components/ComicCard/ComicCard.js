@@ -1,18 +1,27 @@
-import React from 'react';
+import {React, useState} from 'react';
 import {Button} from 'antd';
 import './ComicCard.css';
+import AdminModal from '../AdminModal/AdminModal'
 
 const ComicCard = ({comic, onSelect}) => {
+
+    const [visible, setVisible] = useState(false);
     const {
         title, 
         id, 
-        description, 
+        description,
+        state,
         thumbnail} = comic;
+
     const onClick = () => {
         if(onSelect) {
             onSelect(comic)
         }
     };
+
+    const abrirModal = () => {
+        setVisible(true);
+      };
 
     let message = 'A revisar';
     let buttonType = 'primary';
@@ -48,6 +57,7 @@ const ComicCard = ({comic, onSelect}) => {
                     <p>{description}</p>
                 </div>
             </div>
+            <div>
             {
                 onSelect && (<Button
                     type={buttonType}
@@ -57,6 +67,18 @@ const ComicCard = ({comic, onSelect}) => {
                       {message}
               </Button>)
             }
+            {
+                state === "REVIEW" && (
+                <Button
+                    type="danger"
+                    style={{ marginBottom: "10px", marginLeft: "10px"}}
+                    onClick={abrirModal}
+                  >
+                      Editar
+              </Button>)
+            }
+            </div>
+            <AdminModal comic = {comic} visible={visible} setVisible={setVisible} title="Editar Comic"></AdminModal>
         </div>
     );
 }

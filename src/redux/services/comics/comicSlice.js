@@ -1,8 +1,11 @@
 import {createSlice} from '@reduxjs/toolkit'
 
 const initialState = {
-    comics: {},
-    newComics: [],
+    comics: {
+        newComics: [],
+        reviewComics: [],
+        aprovedComics: []
+    },
     loading: false,
     idBuscado: null,
     error: null,
@@ -16,9 +19,12 @@ const comicSlice = createSlice({
         getComics(state) {
             state.loading = true
         },
-        getComicsSuccess(state, { payload }) {
-            state.comics["newComics"] = payload
+        setComics(state, { payload }) {
+            state.comics = payload
             state.loading = false
+        },
+        addComic(state, {payload}){
+            state.comics["newComics"] = [payload, ...state.comics["newComics"]]
         },
         getComicsFail(state, { payload }) {
             state.error = payload

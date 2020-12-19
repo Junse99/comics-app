@@ -3,31 +3,23 @@ import { ComicCard, ColumnCard } from "../../components";
 import { Api } from "../../common/api";
 import { Form, Input, InputNumber, Row, Col, Modal, Button } from "antd";
 import "./ManageComics.css";
-import * as validation from "./validations";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import * as ComicsTypes from "../../redux/services/comics/comicTypes";
-import { getComics } from "../../redux/services/comics/comicsActions";
 import {comicActions} from '../../redux/services/comics/comicSlice'
+import AdminModal from '../../components/AdminModal/AdminModal'
 
 const ManageComics = () => {
   const [visible, setVisible] = useState(false);
-  const [newComicss, setNewComics] = useState([]);
-  const [revision, setRevision] = useState([]);
-  const [aprobados, setAprobados] = useState([]);
+
   const [comicss, setComics] = useState({
     newComics: [],
     reviewComics: [],
     aprovedComics: [],
   });
-  const [inputs, setInputs] = useState({
-    title: "",
-    id: "",
-    description: "",
-    thumbnail: {
-      path: "",
-      extension: "",
-    },
-  });
+
+  const abrirModal = () => {
+    setVisible(true);
+  };
 
   const { comics, loading, comicSelected, newComics } = useSelector(
     (state) => state.comics,
@@ -42,98 +34,33 @@ const ManageComics = () => {
      dispatch(comicActions.getComics());
   }, []);
 
-  const layout = {
-    labelCol: { span: 8 },
-    wrapperCol: { span: 16 },
-  };
-
-  const onFinish = (values) => {
-    console.log("values: ", values);
-    dispatch({
-      type: ComicsTypes.ADD_COMIC,
-      payload: {comics: values}
-    })
-  };
-
-  const onFinishFailed = (res) => console.log(res);
-
-
-
-  const handleCancel = () => setVisible(false);
-
-  const abrirModal = () => {
-    setVisible(true);
-  };
-
-  const agregarComic = (e) => {
-    e.preventDefault();
-    setNewComics([...newComics, { ...inputs }]);
-    setVisible(false);
-  };
-
-  const onChange = (e) => {
-    console.warn(e.target.value);
-    if (e.target.name === "path" || e.target.name === "extension") {
-      setInputs({
-        ...inputs,
-        thumbnail: {
-          ...inputs.thumbnail,
-          [e.target.name]: e.target.value,
-        },
-      });
-    } else {
-      setInputs({
-        ...inputs,
-        [e.target.name]: e.target.value,
-      });
-    }
-  };
-
-  const footerModal = [
-    <Row>
-      <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
-        <Button
-          type="primary"
-          htmlType="submit"
-          form="new-comic"
-        >
-          {" "}
-          Agregar{" "}
-        </Button>
-      </Form.Item>
-      ,
-    </Row>,
-  ];
-
   const text =
     "Heavy-hitting heroes unite! This Official Handbook contains in-depth bios on more than 30 of the Marvel Universe's most awesome assemblages - including the Defenders, Power Pack and the New Thunderbolts! Plus: An all-new cover by superstar artist Tom Grummett, digitally painted by Morry Hollowell. <br>48 PGS./All Ages ...$3.99 <br>";
 
   const handleSelect = (comic) => {
+    let newState;
     switch (comic.state) {
       case "NEW":
         comic.state = "REVIEW";
-        setComics({
+        newState = {
           ...comics,
           newComics: comics.newComics.filter((i) => i.id !== comic.id),
           reviewComics: [...comics.reviewComics, comic],
-        });
+        }
+        dispatch(comicActions.setComics(newState));
+
         break;
       case "REVIEW":
-        /*         comic.state = 'NEW';
-        setComics({
-          ...comics,
-          reviewComics: comics.reviewComics.filter(i => i.id !== comic.id),
-          newComics: [ ...comics.newComics, comic ]
-        }); */
         comic.state = "APPROVED";
-        setComics({
+        newState = {
           ...comics,
           reviewComics: comics.reviewComics.filter((i) => i.id !== comic.id),
-          aprovedComics: [...comics.aprovedComics, comic],
-        });
+          aprovedComics: [...comics.aprovedComics, comic]
+        }
+        dispatch(comicActions.setComics(newState));
+
         break;
       case "APPROVED":
-        //   comic.state = '';
         break;
       default:
         comic.state = "";
@@ -146,54 +73,7 @@ const ManageComics = () => {
 
   return (
     <div style={{ textAlign: "center" }}>
-      <Modal
-        title="Registrar nuevo comic"
-        onCancel={handleCancel}
-        visible={visible}
-        footer={footerModal}
-      >
-        <Form
-          {...layout}
-          // labelCol={{ span: 8 }}
-          // wrapperCol={{ span: 16 }}
-          name="new-comic"
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
-          validateMessages={validation.messages}
-        >
-          <Form.Item
-            name="title" //Equivale al ID en .net
-            label="Título"
-            rules={validation.schema.title}
-          >
-            <Input name="title" onChange={onChange} />
-          </Form.Item>
-          <Form.Item name="id" label="Id" rules={validation.schema.id}>
-            <Input name="id" onChange={onChange} />
-          </Form.Item>
-          <Form.Item
-            name="description"
-            label="Descripción"
-            rules={validation.schema.description}
-          >
-            <Input name="description" onChange={onChange} />
-          </Form.Item>
-          <Form.Item
-            name={["thumbnail", "path"]}
-            label="Path"
-            rules={validation.schema.path}
-          >
-            <Input name="path" onChange={onChange} />
-          </Form.Item>
-          <Form.Item
-            name={["thumbnail", "extension"]}
-            label="Extensión"
-            rules={validation.schema.extension}
-          >
-            <Input name="extension" onChange={onChange} />
-          </Form.Item>
-        </Form>
-      </Modal>
+      <AdminModal visible={visible} setVisible={setVisible} title="Agregar Comic"></AdminModal>
       <Button
         type="primary"
         style={{ marginBottom: "10px" }}
@@ -201,7 +81,9 @@ const ManageComics = () => {
       >
         Agregar Comic
       </Button>
+
       {loading && <div>Loading...</div>}
+
       <div className="manage-container">
         <ColumnCard
           comics={assignState(comics?.newComics || [], "NEW")}

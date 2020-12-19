@@ -2,7 +2,7 @@
     title: [ {
       required: true,
       min: 3,
-      max: 20
+      max: 100
     } ],
     id: [ {
       required: true,
@@ -12,8 +12,7 @@
     } ],
     description: [ {
       required: true,
-      min: 3,
-      max: 50
+      min: 3
     } ],
     path: [ {
       required: true,
