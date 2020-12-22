@@ -14,12 +14,9 @@
       required: true,
       min: 3
     } ],
-    path: [ {
+    imageUrl: [ {
       required: true,
     } ],
-    extension: [ {
-      required: true
-    } ]
   };
   
   export const messages = {

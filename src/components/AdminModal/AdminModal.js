@@ -17,30 +17,18 @@ const AdminModal = ({comic, visible, setVisible, title, buttonTitle}) => {
 
   const [inputs, setInputs] = useState({
     title: "",
-    id: "",
     description: "",
-    thumbnail: {
-      path: "",
-      extension: "",
-    },
+    imageUrl: ""
   });
 
   const onChange = (e) => {
     console.warn(e.target.value);
-    if (e.target.name === "path" || e.target.name === "extension") {
-      setInputs({
-        ...inputs,
-        thumbnail: {
-          ...inputs.thumbnail,
-          [e.target.name]: e.target.value,
-        },
-      });
-    } else {
+
       setInputs({
         ...inputs,
         [e.target.name]: e.target.value,
       });
-    }
+
   };
 
   const onFinish = (values) => {
@@ -49,12 +37,18 @@ const AdminModal = ({comic, visible, setVisible, title, buttonTitle}) => {
         dispatch(comicActions.setComics({...comics, reviewComics}))
         message.success("Comic actualizado")
     }else{
-        dispatch(comicActions.addComic(values));
-        message.success("Comic agregado")
+      console.log(values)
+      dispatch(comicActions.addComic({values, hide}));
+      /*
+        message.success("Comic agregado") */
     }
-    setVisible(false);
+    
   };
 
+  const hide = () => {
+    setVisible(false);
+    form.resetFields()
+  }
   const onFinishFailed = (res) => console.log(res);
 
   const handleCancel = () => setVisible(false);
@@ -99,9 +93,6 @@ const AdminModal = ({comic, visible, setVisible, title, buttonTitle}) => {
           >
             <Input name="title" onChange={onChange} />
           </Form.Item>
-          <Form.Item name="id" label="Id" rules={validation.schema.id}>
-            <Input name="id" onChange={onChange} />
-          </Form.Item>
           <Form.Item
             name="description"
             label="Descripción"
@@ -110,18 +101,11 @@ const AdminModal = ({comic, visible, setVisible, title, buttonTitle}) => {
             <Input name="description" onChange={onChange} />
           </Form.Item>
           <Form.Item
-            name={["thumbnail", "path"]}
-            label="Path"
-            rules={validation.schema.path}
+            name={"imageUrl"}
+            label="URL de Imagen"
+            rules={validation.schema.imageUrl}
           >
-            <Input name="path" onChange={onChange} />
-          </Form.Item>
-          <Form.Item
-            name={["thumbnail", "extension"]}
-            label="Extensión"
-            rules={validation.schema.extension}
-          >
-            <Input name="extension" onChange={onChange} />
+            <Input name="imageUrl" onChange={onChange} />
           </Form.Item>
         </Form>
       </Modal>

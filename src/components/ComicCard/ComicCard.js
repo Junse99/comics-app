@@ -7,7 +7,7 @@ import { comicActions } from "../../redux/services/comics/comicSlice";
 
 const ComicCard = ({ comic, onSelect }) => {
   const [visible, setVisible] = useState(false);
-  const { title, id, description, state, thumbnail } = comic;
+  const { title, id, description, state, thumbnail, imageUrl } = comic;
 
   const dispatch = useDispatch();
 
@@ -56,7 +56,7 @@ const ComicCard = ({ comic, onSelect }) => {
       <div className="img-card">
         <img
           src={
-            (thumbnail ? `${thumbnail.path}.${thumbnail.extension}` : null) ||
+            imageUrl ||
             "https://cdn.domestika.org/c_limit,dpr_auto,f_auto,q_auto,w_820/v1471610692/content-items/001/689/946/potada_comic-original.jpg?1471610692"
           }
         ></img>

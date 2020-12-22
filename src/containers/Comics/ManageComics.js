@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ComicCard, ColumnCard } from "../../components";
 import { Api } from "../../common/api";
-import { Form, Input, InputNumber, Row, Col, Modal, Button } from "antd";
+import { Button } from "antd";
 import "./ManageComics.css";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import * as ComicsTypes from "../../redux/services/comics/comicTypes";

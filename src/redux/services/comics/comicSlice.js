@@ -24,7 +24,7 @@ const comicSlice = createSlice({
             state.loading = false
         },
         addComic(state, {payload}){
-            state.comics["newComics"] = [payload, ...state.comics["newComics"]]
+            state.loading = true
         },
         getComicsFail(state, { payload }) {
             state.error = payload
